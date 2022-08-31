@@ -45,6 +45,7 @@ export default class Slicer {
         this.#createEscapeRexexPart("\"")+"\n"+
         this.#createStaticRexexPart("\`")+"\n"+
         text.split( /(?:"(?:[\\].[^"]*)")|(?:"[^"]*")|(?:'(?:[\\].[^']*)')|(?:'[^']*')|(?:`[^`]*`)/gus)
+        //regex works statically
         ;
     }
 }
