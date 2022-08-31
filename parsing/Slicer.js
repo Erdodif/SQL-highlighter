@@ -1,37 +1,50 @@
-export default class Slicer{
-    #defaultEscapeDelimiters = ["\"","\'"]
-    #defaultStaticDelimiters = ["\`"]
+export default class Slicer {
+    #EscapeDelimiters = ["\"", "\'"]
+    #StaticDelimiters = ["\`"]
+    //Default regex:  /("([\\].[^"]*)")|("[^\\"]*")|('([\\].[^']*)')|('[^']*')|(`[^`]*`)/gus);
 
-    setDefaultDelimiters(escapeDelimiters,staticDelimiters){
-        this.#defaultEscapeDelimiters = escapeDelimiters;
-        this.#defaultStaticDelimiters = staticDelimiters;
-    }
-
-    getDefaultEscapeDelimiters(delimiters){
-        return this.#defaultEscapeDelimiters;
+    setDefaultDelimiters(escapeDelimiters, staticDelimiters) {
+        this.#EscapeDelimiters = escapeDelimiters;
+        this.#StaticDelimiters = staticDelimiters;
     }
 
-    getDefaultStaticDelimiters(delimiters){
-        return this.#defaultStaticDelimiters;
+    getDefaultEscapeDelimiters(delimiters) {
+        return this.#EscapeDelimiters;
     }
 
-    #createEscapeRexexPart(charFor){
-        return `(${charFor}([\\\\].[^${charFor}]*)${charFor})|(${charFor}[^\\\\${charFor}]*")`;
+    getDefaultStaticDelimiters(delimiters) {
+        return this.#StaticDelimiters;
     }
 
-    #sliceString(text) {
-        return text.split(text,/("[^\\"]*([\\].)*[^\\"]*")|("[^\\"]*")/gus );
+    #createEscapeRexexPart(charFor) {
+        return `(?:${charFor}(?:[\\\\].[^${charFor}]*)${charFor})|(?:${charFor}[^${charFor}]*${charFor})`;
     }
-    
-    sliceStringDefault(text) {
-        return text.split(text, /("([\\].[^"]*)")|("[^\\"]*")|('([\\].[^']*)')|('[^']*')|(`[^`]*`)/gus);
+    #createStaticRexexPart(charFor) {
+        return `(?:${charFor}[^${charFor}]*${charFor})`;
     }
-    
-    
-    sliceStringBySingle(text,charFor) {
-        if(charFor.length !== 1){
-            throw new Error(`A karakterlánc szeleteléséhez egy karakter a megengedett (${charFor})`);
+
+    #getFullRegex() {
+        let regex = "/";
+        if (this.#EscapeDelimiters !== null && this.#EscapeDelimiters.length > 0) {
+            for (const character of this.#EscapeDelimiters) {
+                regex += this.#createEscapeRexexPart(character) + "|";
+            }
         }
-        return text.split(text,`/(${charFor}[^\\\\${charFor}]*([\\\\].)*[^\\\\${charFor}]*${charFor})|(${charFor}[^\\\\${charFor}]*${charFor})/gus` );
+        if (this.#StaticDelimiters !== null && this.#StaticDelimiters.length > 0) {
+            for (const character of this.#StaticDelimiters) {
+                regex += this.#createStaticRexexPart(character) + "|";
+            }
+        }
+        return regex.slice(0, regex.length - 1) + "/gus";
+    }
+
+    splitString(text) {
+        return this.#getFullRegex()+"\n"+
+        text.split(this.#getFullRegex())+"\n"+
+        this.#createEscapeRexexPart("\'")+"\n"+
+        this.#createEscapeRexexPart("\"")+"\n"+
+        this.#createStaticRexexPart("\`")+"\n"+
+        text.split( /(?:"(?:[\\].[^"]*)")|(?:"[^"]*")|(?:'(?:[\\].[^']*)')|(?:'[^']*')|(?:`[^`]*`)/gus)
+        ;
     }
 }
