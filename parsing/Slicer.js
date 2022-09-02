@@ -1,19 +1,45 @@
 export default class Slicer {
-    #EscapeDelimiters = ["\"", "\'"]
-    #StaticDelimiters = ["\`"]
+    #LineSeparator;
+    #SingleLineComment;
+    #MultiLineComment;
+    #EscapeDelimiters;
+    #StaticDelimiters;
+
+    constructor(lineSeparator = null, singleLineComment = null, multiLineCommentStart = null,multiLineCommentEnd = null, escapeDelimiters = null, staticDelimiters = null) {
+        this.#LineSeparator = lineSeparator ?? ";";
+        this.#SingleLineComment = singleLineComment ?? "--";
+        this.#MultiLineComment = { start: "/*", end: "*/" };
+        if(multiLineCommentStart === null || multiLineCommentEnd === null ){
+            this.#MultiLineComment = { start: multiLineCommentStart, end: multiLineCommentEnd };
+        }
+        this.#EscapeDelimiters = escapeDelimiters ?? ["\"", "\'"];
+        this.#StaticDelimiters = staticDelimiters ?? ["\`"];
+    }
+
     //Default regex:  /("([\\].[^"]*)")|("[^\\"]*")|('([\\].[^']*)')|('[^']*')|(`[^`]*`)/gus);
 
-    setDefaultDelimiters(escapeDelimiters, staticDelimiters) {
+    #setMultiLineComment(start, end) {
+        this.#MultiLineComment = { start: start, end: end };
+    }
+    #setDefaultDelimiters(escapeDelimiters, staticDelimiters) {
         this.#EscapeDelimiters = escapeDelimiters;
         this.#StaticDelimiters = staticDelimiters;
     }
 
-    getDefaultEscapeDelimiters(delimiters) {
+    getEscapeDelimiters() {
         return this.#EscapeDelimiters;
     }
-
-    getDefaultStaticDelimiters(delimiters) {
+    getStaticDelimiters() {
         return this.#StaticDelimiters;
+    }
+    getLineSeparator(){
+        return this.#LineSeparator;
+    }
+    getSingleLineComment(){
+        return this.#SingleLineComment;
+    }
+    getMultiLineComment(){
+        return this.#MultiLineComment;
     }
 
     #createEscapeRexexPart(charFor) {
@@ -39,13 +65,13 @@ export default class Slicer {
     }
 
     splitString(text) {
-        return this.#getFullRegex()+"\n"+
-        text.split(this.#getFullRegex())+"\n"+
-        this.#createEscapeRexexPart("\'")+"\n"+
-        this.#createEscapeRexexPart("\"")+"\n"+
-        this.#createStaticRexexPart("\`")+"\n"+
-        text.split( /(?:"(?:[\\].[^"]*)")|(?:"[^"]*")|(?:'(?:[\\].[^']*)')|(?:'[^']*')|(?:`[^`]*`)/gus)
-        //regex works statically
-        ;
+        return this.#getFullRegex() + "\n" +
+            text.split(this.#getFullRegex()) + "\n" +
+            this.#createEscapeRexexPart("\'") + "\n" +
+            this.#createEscapeRexexPart("\"") + "\n" +
+            this.#createStaticRexexPart("\`") + "\n" +
+            text.split(/(?:"(?:[\\].[^"]*)")|(?:"[^"]*")|(?:'(?:[\\].[^']*)')|(?:'[^']*')|(?:`[^`]*`)/gus)
+            //regex works statically
+            ;
     }
 }
