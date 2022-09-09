@@ -1,10 +1,10 @@
-import colours from "../colours";
+import colours from "./Colours.js";
 export default class Printer {
-    print(colour, string) {
+    static print(colour, string) {
         console.log(`${colour}${string}${colours.reset}`);
     }
 
-    printMultipart(multipart){
+    static printMultipart(multipart){
         let temp = "";
         temp.concat(...multipart);
         temp.concat(colours.reset);
