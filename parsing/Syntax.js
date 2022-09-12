@@ -23,11 +23,13 @@ export default class Syntax {
     }
 
     getTokenByKey(key) {
-        key = key.toLowerCase();
-        for (var i = 0; i < this.dictionary.length; i++) {
-            if (this.#tokenMatchesKey(i, key)) {
-                return this.getToken(i);
-            }
+        key = key.toString().toLowerCase();
+        let i = 0;
+        while (i < this.dictionary.length && !this.#tokenMatchesKey(i,key)){
+            i++;
+        }
+        if (i < this.dictionary.length){
+            return this.getToken(i);
         }
         return null;
     }
