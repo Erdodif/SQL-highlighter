@@ -1,2 +1,1 @@
-SELECT * FROM `question` where question.title like "%Moma%"; 
-/(?<string>"(?:(?:[\\].|[^"])*)")|(?<sl_comment>--([^\n])*\n)|(?<line_end>;)|(?<delimiter> |\n|\t)|(?<token>[^" ]*)/usig
+SELECT * FROM `question` where question.title like "%Moma%";

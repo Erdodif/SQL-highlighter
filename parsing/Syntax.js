@@ -3,12 +3,10 @@ import Argument from "./Argument.js";
 import fs from "fs";
 
 export default class Syntax {
-    slicer;
     dictionary;
 
-    constructor(dictionaryFile, slicer) {
-        this.dictionary = JSON.parse(fs.readFileSync(dictionaryFile, { encoding: 'utf8' }));
-        this.slicer = slicer;
+    constructor(dictionaryFilePath) {
+        this.dictionary = JSON.parse(fs.readFileSync(dictionaryFilePath, { encoding: 'utf8' }));
     }
 
     #tokenMatchesKey(index, key) {
